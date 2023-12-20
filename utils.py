@@ -9,14 +9,13 @@ import matplotlib.patches as mpatches
 
 
 def load_data(datafile):
-    """ Utility function to load the data files with correct dtypes """
     data = pd.read_csv(
         datafile,
-        index_col='time', parse_dates=['time'],
         dtype={'x': 'f4', 'y': 'f4', 'z': 'f4', 'annotation': 'string'}
     )
+    data['time'] = pd.to_datetime(data['time'], format = "ISO8601")
+    data.set_index('time', inplace=True)
     return data
-
 
 def make_windows(data, winsec=30, sample_rate=100, dropna=True, verbose=False):
 
