@@ -86,6 +86,10 @@ def plot_compare(t, y_true, y_pred, trace=None, min_trace=0, max_trace=1):
         "mixed": "tab:orange",
         "walking": "tab:green",
         "bicycling": "tab:olive",
+        "eating": "tab:pink",
+        "maybe-eating": "tab:blue",
+        # set nan to black color
+        "nan": "tab:gray",
     }
 
     def ax_plot(ax, t, y, ylabel=None):
