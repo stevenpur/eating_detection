@@ -145,6 +145,7 @@ def train_hmm(Y_prob, Y_true, labels, uniform_prior=True):
         prior = np.ones(len(labels)) / len(labels)
     else:
         # Label probability equals observed rate
+        print("hi")
         prior = np.mean(Y_true.reshape(-1,1)==labels, axis=0)
 
     emission = np.vstack(
