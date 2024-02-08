@@ -7,6 +7,11 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.patches as mpatches
 
+from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import make_scorer
+from sklearn.metrics import recall_score, confusion_matrix
+
+
 
 def load_data(datafile):
     data = pd.read_csv(
@@ -204,3 +209,36 @@ def ewm(x, alpha=.05):
     weights = np.asarray([(1 - alpha)**i for i in range(n)])[::-1]
     weights[weights < 1e-3] = 0  # ignore very small weights
     return (x * weights).sum() / weights.sum()
+
+def get_class_index(y_true, class_label):
+    classes = np.unique(y_true)
+    return np.where(classes == class_label)[0][0]
+
+def specificity_multiclass(y_true, y_pred, class_index):
+    """
+    Compute the specificity for a given class index in a multi-class setting.
+    """
+    # Create a confusion matrix
+    cm = confusion_matrix(y_true, y_pred, labels=np.unique(y_true))
+    total_negative = cm.sum() - cm[class_index].sum()
+    true_negative = total_negative - cm[:, class_index].sum() + cm[class_index, class_index]
+    specificity = true_negative / total_negative if total_negative else 0
+    return specificity
+
+
+def class_specific_ba(y_true, y_pred, class_label):
+    """
+    Compute the balanced accuracy (average of recall and specificity) for a given class in a multi-class setting.
+    """
+    recall = recall_score(y_true, y_pred, labels=[class_label], average=None)
+    class_index = get_class_index(y_true, class_label)
+    spec = specificity_multiclass(y_true, y_pred, class_index)
+    return (recall + spec) / 2
+
+def make_ba_scorer_for_class(class_label):
+    """
+    Create a balanced accuracy scorer for a given class in a multi-class setting.
+    """
+    def scorer(y_true, y_pred):
+        return class_specific_ba(y_true, y_pred, class_label)
+    return make_scorer(scorer)
