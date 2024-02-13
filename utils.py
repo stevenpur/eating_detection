@@ -242,3 +242,14 @@ def make_ba_scorer_for_class(class_label):
     def scorer(y_true, y_pred):
         return class_specific_ba(y_true, y_pred, class_label)
     return make_scorer(scorer)
+
+
+def resampled_indices(array, n, replace=False):
+    """
+    Return the indices of the downsampled array.
+    input: array, the array to be downsampled
+            n, the number of samples in the downsampled array
+    """
+    if len(array) < n and not replace:
+        raise ValueError("Cannot sample more elements than are in the array unless 'replace' is True.")
+    return np.random.choice(np.arange(len(array)), n, replace=replace)

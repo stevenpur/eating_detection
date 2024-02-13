@@ -240,7 +240,6 @@ if __name__ == "__main__":
     data = np.random.rand(1000, 3)
 
     sample_rate = 100
-
     # Extract features
     features = aidan_features(data, sample_rate)
 
